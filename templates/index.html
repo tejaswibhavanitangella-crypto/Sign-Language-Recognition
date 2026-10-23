@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SignVision — ISL Gesture Recognition</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="background-glow glow-one"></div>
+  <div class="background-glow glow-two"></div>
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">ISL</div>
+      <div>
+        <div class="brand-name">SignVision</div>
+        <div class="brand-subtitle">Indian Sign Language Recognition</div>
+      </div>
+    </div>
+    <div class="status-pill"><span class="status-dot"></span> SVM model online</div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div>
+        <span class="eyebrow">MACHINE LEARNING • SVM</span>
+        <h1>Understand static<br><span>ISL gestures.</span></h1>
+        <p class="hero-text">Upload a hand image or use your camera to recognize supported Indian Sign Language alphabets and numbers in real time.</p>
+        <div class="hero-stats">
+          <div><strong>{{ class_count }}</strong><span>static classes</span></div>
+          <div><strong>21</strong><span>hand landmarks</span></div>
+          <div><strong>99.92%</strong><span>test accuracy</span></div>
+        </div>
+      </div>
+      <div class="hero-badge">
+        <div class="badge-ring">✦</div>
+        <span>AI-powered</span>
+        <strong>Gesture Lab</strong>
+      </div>
+    </section>
+
+    <section class="workspace">
+      <div class="tabs" role="tablist">
+        <button class="tab active" data-mode="upload"><span>↥</span> Upload Image</button>
+        <button class="tab" data-mode="camera"><span>◉</span> Live Camera</button>
+      </div>
+
+      <div id="upload-panel" class="mode-panel active">
+        <div class="upload-grid">
+          <div class="upload-card">
+            <div id="drop-zone" class="drop-zone">
+              <div class="upload-icon">↑</div>
+              <h2>Drop your gesture image here</h2>
+              <p>or click to browse from your computer</p>
+              <span class="file-types">JPG • JPEG • PNG • WEBP</span>
+              <input id="image-input" type="file" accept="image/*" hidden>
+              <button id="browse-btn" class="primary-btn" type="button">Choose Image</button>
+            </div>
+          </div>
+
+          <div class="preview-card">
+            <div class="card-heading"><span>IMAGE PREVIEW</span><span id="upload-status">Waiting for image</span></div>
+            <div class="image-preview" id="image-preview">
+              <div class="empty-state"><div class="empty-icon">◌</div><p>Your selected image will appear here</p></div>
+            </div>
+            <button id="predict-upload-btn" class="predict-btn" disabled>Analyze Gesture <span>→</span></button>
+          </div>
+        </div>
+      </div>
+
+      <div id="camera-panel" class="mode-panel">
+        <div class="camera-grid">
+          <div class="camera-card">
+            <div class="card-heading"><span>LIVE CAMERA</span><span id="camera-status">Camera stopped</span></div>
+            <div class="camera-frame">
+              <video id="video" autoplay playsinline muted></video>
+              <canvas id="canvas" hidden></canvas>
+              <div id="camera-overlay" class="camera-overlay">
+                <div class="camera-placeholder"><div class="camera-icon">◉</div><p>Start your camera to begin recognition</p></div>
+              </div>
+              <div class="scan-line"></div>
+            </div>
+            <div class="camera-controls">
+              <button id="start-camera" class="primary-btn">Start Camera</button>
+              <button id="stop-camera" class="secondary-btn" disabled>Stop</button>
+            </div>
+            <p class="privacy-note">Your camera frames are processed by this local app and are not uploaded to a third-party service.</p>
+          </div>
+
+          <div class="result-card">
+            <div class="card-heading"><span>RECOGNITION</span><span id="detection-status" class="live-label">● READY</span></div>
+            <div class="result-main">
+              <span class="result-label">PREDICTED GESTURE</span>
+              <div id="camera-prediction" class="big-prediction">—</div>
+              <div class="confidence-wrap">
+                <div class="confidence-header"><span>Model confidence</span><strong id="camera-confidence">—</strong></div>
+                <div class="progress"><div id="camera-progress" class="progress-fill"></div></div>
+              </div>
+            </div>
+            <div class="top-predictions">
+              <div class="mini-title">TOP PREDICTIONS</div>
+              <div id="camera-top-list" class="prediction-list"><div class="muted">Start the camera to see predictions.</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="result-section" id="upload-result-section" hidden>
+      <div class="result-banner">
+        <div class="result-letter" id="upload-prediction">—</div>
+        <div class="result-copy">
+          <span>RECOGNIZED GESTURE</span>
+          <h2 id="upload-result-title">—</h2>
+          <p>Detected from the uploaded image using MediaPipe hand landmarks and an RBF-kernel SVM.</p>
+        </div>
+        <div class="upload-confidence">
+          <span>CONFIDENCE</span><strong id="upload-confidence">—</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="info-grid">
+      <div class="info-card"><span class="info-number">01</span><div><h3>Detect</h3><p>MediaPipe identifies 21 hand landmarks from the image or camera frame.</p></div></div>
+      <div class="info-card"><span class="info-number">02</span><div><h3>Normalize</h3><p>Landmarks are translated and scaled into a 63-feature representation.</p></div></div>
+      <div class="info-card"><span class="info-number">03</span><div><h3>Classify</h3><p>Your trained RBF SVM predicts one of the supported static ISL classes.</p></div></div>
+    </section>
+
+    <footer>SignVision • ISL Static Gesture Recognition • Machine Learning with SVM</footer>
+  </main>
+
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
